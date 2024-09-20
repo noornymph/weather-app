@@ -5,6 +5,7 @@ import WeatherDetails from "./components/Weather/WeatherDetails";
 import { SphereSpinner } from "react-spinners-kit";
 import SearchBar from "./components/SearchBar";
 import Header from "./components/Header";
+import ExtendedForecast from "./components/ExtendedForecast";
 
 function App() {
   const { city, weatherData, loading, error } = useSelector(
@@ -60,7 +61,10 @@ function App() {
           {error && <div className="error-msg">{error}</div>}
 
           {/* Weather Details */}
-          {weatherData && <WeatherDetails />}
+          {weatherData && <WeatherDetails unit={unit} />}
+
+          {/* Extended Forecast */}
+          <ExtendedForecast city={city} unit={unit} />
         </div>
       </div>
     </div>

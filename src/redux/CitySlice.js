@@ -21,11 +21,32 @@ export const fetchWeatherByCity = createAsyncThunk(
   }
 );
 
+// Thunk for fetching 5-day forecast data
+export const fetchExtendedForecast = createAsyncThunk(
+  "city/fetchExtendedForecast",
+  async ({ city, unit }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=${unit}&appid=${appId}`
+      );
+      const data = await response.json();
+      if (response.ok) {
+        return data;
+      } else {
+        return rejectWithValue(data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const citySlice = createSlice({
   name: "city",
   initialState: {
     city: "",
     weatherData: null,
+    extendedForecast: null,
     loading: false,
     error: null,
   },
@@ -45,6 +66,18 @@ const citySlice = createSlice({
         state.weatherData = action.payload;
       })
       .addCase(fetchWeatherByCity.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchExtendedForecast.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExtendedForecast.fulfilled, (state, action) => {
+        state.loading = false;
+        state.extendedForecast = action.payload;
+      })
+      .addCase(fetchExtendedForecast.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

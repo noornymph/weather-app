@@ -1,6 +1,6 @@
 import React from "react";
 
-function Header({ unit, toggleUnit }) {
+const Header = ({ unit, toggleUnit }) => {
   return (
     <div className="details-box-header">
       {/* heading */}
@@ -14,6 +14,6 @@ function Header({ unit, toggleUnit }) {
       </div>
     </div>
   );
-}
+};
 
 export default Header;

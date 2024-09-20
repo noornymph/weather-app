@@ -4,9 +4,10 @@ import InfoCard from "./InfoCard";
 import { droplet } from "react-icons-kit/feather";
 import { activity } from "react-icons-kit/feather";
 import { wind } from "react-icons-kit/feather";
+import ExtendedForecast from "../ExtendedForecast";
 import { useSelector } from "react-redux";
 
-const WeatherDetails = () => {
+const WeatherDetails = ({ unit }) => {
   const { weatherData } = useSelector((state) => state.city);
 
   const {
