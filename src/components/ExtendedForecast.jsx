@@ -1,32 +1,14 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchExtendedForecast } from "../redux/citySlice";
+import React from "react";
 
-const ExtendedForecast = ({ city, unit }) => {
-  const { extendedForecast, loading, error } = useSelector(
-    (state) => state.city
-  );
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (city) {
-      dispatch(fetchExtendedForecast({ city, unit }));
-    }
-  }, [city, unit, dispatch]);
-
-  // Function to filter the forecast data to one entry per day (e.g., at 12:00 PM)
+const ExtendedForecast = ({ extendedForecast }) => {
   const getDailyForecast = (forecastList) => {
     const dailyForecast = [];
     const uniqueDays = new Set();
 
     forecastList.forEach((data) => {
       const date = new Date(data.dt_txt);
-      const day = date.toLocaleDateString("en-US", {
-        weekday: "short",
-      });
+      const day = date.toLocaleDateString("en-US", { weekday: "short" });
 
-      // Only add one entry per day
       if (!uniqueDays.has(day) && date.getHours() === 12) {
         dailyForecast.push(data);
         uniqueDays.add(day);
@@ -43,17 +25,11 @@ const ExtendedForecast = ({ city, unit }) => {
   return (
     <>
       <h4 className="extended-forecast-heading">Extended Forecast</h4>
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div className="error-msg">{error}</div>
-      ) : filteredForecast.length > 0 ? (
+      {filteredForecast.length > 0 ? (
         <div className="extended-forecasts-container">
           {filteredForecast.map((data, index) => {
             const date = new Date(data.dt_txt);
-            const day = date.toLocaleDateString("en-US", {
-              weekday: "short",
-            });
+            const day = date.toLocaleDateString("en-US", { weekday: "short" });
             return (
               <div className="forecast-box" key={index}>
                 <h5>{day}</h5>

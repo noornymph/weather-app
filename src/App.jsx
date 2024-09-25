@@ -1,70 +1,92 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchWeatherByCity, setCity } from "./redux/CitySlice";
+import React, { useState } from "react";
+import {
+  useFetchWeatherByCityQuery,
+  useFetchExtendedForecastQuery,
+} from "./api/weatherApi";
 import WeatherDetails from "./components/Weather/WeatherDetails";
-import { SphereSpinner } from "react-spinners-kit";
 import SearchBar from "./components/SearchBar";
 import Header from "./components/Header";
 import ExtendedForecast from "./components/ExtendedForecast";
+import { SphereSpinner } from "react-spinners-kit";
+import "./App.css";
 
 function App() {
-  const { city, weatherData, loading, error } = useSelector(
-    (state) => state.city
-  );
+  const [city, setCity] = useState("");
   const [unit, setUnit] = useState("metric");
 
-  const dispatch = useDispatch();
+  // Fetch current weather data based on city and unit
+  const {
+    data: weatherData,
+    error: weatherError,
+    isLoading: weatherLoading,
+  } = useFetchWeatherByCityQuery({ city, unit }, { skip: !city });
 
-  useEffect(() => {
-    if (city) {
-      fetchData();
-    }
-  }, [city, unit]);
+  // Fetch extended forecast data based on city and unit
+  const {
+    data: extendedForecast,
+    error: forecastError,
+    isLoading: forecastLoading,
+  } = useFetchExtendedForecastQuery({ city, unit }, { skip: !city });
 
+  // Toggle between metric and imperial units
   const toggleUnit = () => {
-    setUnit(unit === "metric" ? "imperial" : "metric");
+    setUnit((prevUnit) => (prevUnit === "metric" ? "imperial" : "metric"));
   };
 
-  const fetchData = () => {
-    dispatch(fetchWeatherByCity({ city, unit }));
-  };
-
+  // Handle the city search form submission
   const handleCitySearch = (e) => {
     e.preventDefault();
     if (city) {
-      fetchData();
+      setCity(city);
     }
   };
 
   return (
     <div className="background">
       <div className="box">
-        {/* City search form */}
         <SearchBar
           city={city}
-          setCity={(newCity) => dispatch(setCity(newCity))}
+          setCity={setCity}
           handleCitySearch={handleCitySearch}
-          loadings={loading}
+          loadings={weatherLoading}
         />
 
         <div className="current-weather-details-box">
           <Header unit={unit} toggleUnit={toggleUnit} />
 
-          {/* Loading Spinner */}
-          {loading && (
+          {/* Show loading spinner for weather data */}
+          {weatherLoading && (
             <div className="loader">
-              <SphereSpinner loading={loading} color="#2fa5ed" size={20} />
+              <SphereSpinner
+                loading={weatherLoading}
+                color="#2fa5ed"
+                size={20}
+              />
             </div>
           )}
 
-          {/* Error Message */}
-          {error && <div className="error-msg">{error}</div>}
+          {/* Handle and display weather errors */}
+          {weatherError && (
+            <div className="error-msg">{weatherError.message}</div>
+          )}
 
-          {/* Weather Details */}
-          {weatherData && <WeatherDetails unit={unit} />}
+          {/* Display weather details if data is available */}
+          {weatherData && (
+            <WeatherDetails weatherData={weatherData} unit={unit} />
+          )}
 
-          {/* Extended Forecast */}
-          <ExtendedForecast city={city} unit={unit} />
+          {/* Show loading message for extended forecast */}
+          {forecastLoading && <div>Loading forecast...</div>}
+
+          {/* Handle and display forecast errors */}
+          {forecastError && (
+            <div className="error-msg">{forecastError.message}</div>
+          )}
+
+          {/* Display extended forecast if data is available */}
+          {extendedForecast && (
+            <ExtendedForecast extendedForecast={extendedForecast} />
+          )}
         </div>
       </div>
     </div>

@@ -1,16 +1,8 @@
 import React from "react";
 import { Icon } from "react-icons-kit";
 import { arrowUp, arrowDown } from "react-icons-kit/feather";
-import { useSelector } from "react-redux";
 
-export default function TemperatureCard() {
-  const { weatherData } = useSelector((state) => state.city);
-
-  const {
-    name: cityName,
-    main: { temp_min: tempMin, temp_max: tempMax },
-  } = weatherData;
-
+const TemperatureCard = ({ tempMin, tempMax }) => {
   return (
     <div className="key-value-box">
       <div className="key">
@@ -23,4 +15,6 @@ export default function TemperatureCard() {
       </div>
     </div>
   );
-}
+};
+
+export default TemperatureCard;
